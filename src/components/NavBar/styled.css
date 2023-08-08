@@ -1,0 +1,30 @@
+ul {
+  display: flex;
+  padding-left: var(--mvc-spacing-one);
+  flex-direction: column;
+  gap: var(--mvc-spacing-one);
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: var(--mvc-spacing-half);
+}
+
+li {
+  font-weight: 500;
+}
+
+.active {
+  background-color: white;
+  padding: var(--mvc-spacing-half);
+  border-top-left-radius: var(--mvc-spacing-one);
+  border-bottom-left-radius: var(--mvc-spacing-one);
+}
+
+.inactive {
+  padding-left: var(--mvc-spacing-half);
+}
