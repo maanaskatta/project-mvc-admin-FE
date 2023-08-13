@@ -1,35 +1,29 @@
 // Dependencies.
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { BsSpeedometer2 } from "react-icons/bs";
 import { FiUploadCloud } from "react-icons/fi";
 import "./styled.css";
 
-export type NavBarProps = {
-  activeScreen: string;
-  setActiveScreen: any;
-};
-
 // Renders the NavBar.
-function NavBar({ activeScreen, setActiveScreen }: NavBarProps) {
+function NavBar() {
+  // State.
+  const activeScreen = useLocation().pathname.split("/")[1];
+  // Markup.
   return (
     <nav className="project-MVC-NavBar">
       <ul>
         <li>
-          <Link
-            to="/"
-            onClick={() => setActiveScreen("dashboard")}
-            className={activeScreen === "dashboard" ? "active" : "inactive"}>
+          <Link to="/" className={activeScreen === "" ? "active" : "inactive"}>
             <BsSpeedometer2 />
-            Dashboard
+            <span>Dashboard</span>
           </Link>
         </li>
         <li>
           <Link
             to="/upload"
-            onClick={() => setActiveScreen("upload")}
             className={activeScreen === "upload" ? "active" : "inactive"}>
             <FiUploadCloud />
-            Upload
+            <span>Upload</span>
           </Link>
         </li>
       </ul>

@@ -1,20 +1,19 @@
 body {
   background-color: whitesmoke;
-  height: 100%;
 }
 
 .App {
   display: flex;
-  height: 100vh;
   width: 100%;
 }
 
 .project-MVC-Body {
-  background-color: red;
   width: 100%;
+  height: 100%;
+  min-height: 100vh;
 }
 
 .project-MVC-NavBar {
-  background-color: aqua;
+  background: linear-gradient(to left top, skyblue, blue);
   width: 20%;
 }

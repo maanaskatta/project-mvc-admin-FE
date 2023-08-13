@@ -1,20 +1,18 @@
 // Libraries.
-import { useState } from "react";
 
 // Dependencies.
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Dashboard from "./components/Screens/Dashboard";
-import UploadScreen from "./components/Screens/Upload";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import NavBar from "./components/NavBar";
+import Dashboard from "./components/Screens/Dashboard";
+import UploadScreen from "./components/Screens/Upload";
 
 // Renders the App.
 function App() {
   // State.
-  const [activeScreen, setActiveScreen] = useState("dashboard");
   return (
     <div className="App">
-      <NavBar activeScreen={activeScreen} setActiveScreen={setActiveScreen} />
+      <NavBar />
       <div className="project-MVC-Body">
         <Routes>
           <Route path="/" Component={Dashboard} />
