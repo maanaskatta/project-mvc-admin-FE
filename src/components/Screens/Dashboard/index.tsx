@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { GetAllVidoes, GetSearchedVidoes } from "../../../utilities/BackendAPI";
+import { GetAllVideos, GetSearchedVideos } from "../../../utilities/BackendAPI";
 import "./styled.css";
 import { Player } from "video-react";
-import { AiOutlineSearch, AiOutlineLoading3Quarters } from "react-icons/ai";
+import { AiOutlineSearch } from "react-icons/ai";
 import Loading from "../../Loading";
 
 export interface Video {
@@ -23,9 +23,10 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isEmptySearchResults, setIsEmptySearchResults] = useState(false);
+  let searchTimeout: any;
   // Callbacks.
   const fetchAllVideos = useCallback(async () => {
-    const temp: Video[] = await GetAllVidoes();
+    const temp: Video[] = await GetAllVideos();
 
     if (temp.length) {
       setVideos(temp);
@@ -38,27 +39,31 @@ function Dashboard() {
   }, []);
 
   // Callbacks.
-  const handleSearch = useCallback(
-    (e: any) => {
-      setIsEmptySearchResults(false);
-      setSearchTerm(e.target.value);
-      setIsSearching(true);
-      setVideos([]);
-      setTimeout(async () => {
-        const searchedVideos = e.target.value
-          ? await GetSearchedVidoes(e.target.value)
-          : await GetAllVidoes();
-        if (searchedVideos.length) {
+  const handleSearch = useCallback((e: any) => {
+    const searchValue = e.target.value.trim(); // Remove leading/trailing whitespace
+    setSearchTerm(searchValue);
+
+    setIsSearching(true);
+    setIsEmptySearchResults(false);
+
+    clearTimeout(searchTimeout); // Clear any previous timeouts
+
+    searchTimeout = setTimeout(async () => {
+      if (!searchValue) {
+        setIsSearching(false);
+        setVideos(await GetAllVideos());
+      } else {
+        const searchedVideos = await GetSearchedVideos(searchValue);
+        setIsSearching(false);
+
+        if (searchedVideos.length > 0) {
           setVideos(searchedVideos);
         } else {
           setIsEmptySearchResults(true);
         }
-        setIsSearching(false);
-      }, 500);
-    },
-    [searchTerm]
-  );
-
+      }
+    }, 750);
+  }, []);
   // Markup.
   return (
     <div className="project-mvc-Dashboard-Container">

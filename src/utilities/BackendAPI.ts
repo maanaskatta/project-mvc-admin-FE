@@ -28,12 +28,12 @@ export const UploadVideo = async (data: any): Promise<boolean> => {
   return res;
 };
 
-export const GetAllVidoes = async (): Promise<Video[]> => {
+export const GetAllVideos = async (): Promise<Video[]> => {
   const res = await axios.get(`${HOST}/getAllVideos`);
   return res.data;
 };
 
-export const GetSearchedVidoes = async (
+export const GetSearchedVideos = async (
   searchTerm: string
 ): Promise<Video[]> => {
   const res = await axios.post(`${HOST}/getSearchedVideos`, { searchTerm });
