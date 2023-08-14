@@ -5,14 +5,23 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { injectStyle } from "react-toastify/dist/inject-style";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+injectStyle();
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <App />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        closeOnClick
+        theme="colored"
+      />
     </BrowserRouter>
   </React.StrictMode>
 );

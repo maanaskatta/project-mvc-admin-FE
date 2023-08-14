@@ -1,0 +1,38 @@
+.project-mvc-Dashboard-Container {
+  padding: var(--mvc-spacing-one);
+}
+
+.project-mvc-Videos-Container {
+  display: flex;
+  width: 100%;
+  gap: var(--mvc-spacing-one);
+  margin-left: var(--mvc-spacing-one);
+  margin-top: var(--mvc-spacing-one);
+}
+
+.project-mvc-SearchBox-Container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.project-mvc-SearchBox {
+  width: 100%;
+  padding: var(--mvc-spacing-half);
+  padding-left: 30px;
+  border-radius: var(--mvc-spacing-half);
+  border: 1px solid gray;
+  font-size: large;
+}
+
+.search-icon {
+  position: relative;
+  left: 25px;
+}
+
+.project-mvc-Dashboard-Loading-Container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

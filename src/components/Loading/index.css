@@ -1,0 +1,7 @@
+.project-mvc-Loading-Container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--mvc-spacing-half);
+  font-size: larger;
+}

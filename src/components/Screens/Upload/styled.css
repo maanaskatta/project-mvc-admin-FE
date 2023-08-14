@@ -4,15 +4,13 @@
 }
 
 .project-mvc-Video-Fieldset,
-.project-mvc-Thumbnail-Fieldset,
 .emotion-source-container {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.project-mvc-Video-Fieldset,
-.project-mvc-Thumbnail-Fieldset {
+.project-mvc-Video-Fieldset {
   justify-content: center;
   flex-direction: column;
 }
@@ -75,6 +73,19 @@ label {
 .project-mvc-UploadButton-Container > button:hover {
   background-color: gainsboro;
   color: dodgerblue;
+}
+
+.isLoading {
+  animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Video Player Styles */

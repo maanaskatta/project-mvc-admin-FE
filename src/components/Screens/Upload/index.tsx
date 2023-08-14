@@ -4,6 +4,8 @@ import { useState, useCallback } from "react";
 import { Player } from "video-react";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
+import { toast } from "react-toastify";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 // Dependencies.
 
@@ -20,7 +22,6 @@ import { commaSeparatedStringToArray } from "../../../utilities/helpers";
 function UploadScreen() {
   // State.
   const [videoFile, setVideoFile] = useState<any>(null);
-  const [thumbnailFile, setThumbnailFile] = useState(null);
   const [tagsString, setTagsString] = useState("");
   const [emotions, setEmotions] = useState(["Happy", "Anger", "Sad"]);
   const [selectedEmotion, setSelectedEmotion] = useState("");
@@ -35,12 +36,12 @@ function UploadScreen() {
     [videoFile]
   );
 
-  const onThumbnailUpload = useCallback(
-    (e: any) => {
-      setThumbnailFile(e.target.files[0]);
-    },
-    [thumbnailFile]
-  );
+  const clearForm = () => {
+    setVideoFile(null);
+    setTagsString("");
+    setSelectedEmotion("");
+    setSource("");
+  };
 
   const onTagsChange = useCallback(
     (e: any) => {
@@ -64,22 +65,35 @@ function UploadScreen() {
   );
 
   const onUpload = async () => {
-    setIsLoading(true);
-    const videoDownloadURL = await UploadFileToFirebase(videoFile);
-    const thumbnailDownloadURL = await UploadFileToFirebase(thumbnailFile);
-    const tags = commaSeparatedStringToArray(tagsString);
-    const videoDataObject = {
-      emotion: selectedEmotion,
-      numberOfDownloads: 0,
-      numberOfReports: 0,
-      source,
-      tags,
-      thumbnailDownloadURL,
-      title: videoFile?.name,
-      videoDownloadURL,
-    };
-    const videoUploadResult = await UploadVideo(videoDataObject);
-    setIsLoading(false);
+    if (
+      videoFile &&
+      tagsString.length > 0 &&
+      selectedEmotion.length > 0 &&
+      source.length > 0
+    ) {
+      setIsLoading(true);
+      const videoDownloadURL = await UploadFileToFirebase(videoFile);
+      const tags = commaSeparatedStringToArray(tagsString);
+      const videoDataObject = {
+        emotion: selectedEmotion,
+        numberOfDownloads: 0,
+        numberOfReports: 0,
+        source,
+        tags,
+        title: videoFile?.name,
+        videoDownloadURL,
+      };
+      const isVideoUploaded: boolean = await UploadVideo(videoDataObject);
+      if (isVideoUploaded) {
+        toast.success("Video uploaded successfully!");
+      } else {
+        toast.error("Failed to upload video!...");
+      }
+      setIsLoading(false);
+      clearForm();
+    } else {
+      toast.warning("Please fill all the required fields!...");
+    }
   };
 
   // Markup.
@@ -88,7 +102,7 @@ function UploadScreen() {
       <h3>Upload Video</h3>
       <fieldset disabled={isLoading} className="project-mvc-Video-Fieldset">
         <legend>Video</legend>
-        <input type="file" onChange={onVideoFileUpload} />
+        <input required type="file" onChange={onVideoFileUpload} />
         {videoFile && (
           <Player
             playsInline
@@ -103,7 +117,7 @@ function UploadScreen() {
         <legend>Descriptors</legend>
         <div>
           <label>Tags</label>
-          <textarea value={tagsString} onChange={onTagsChange} />
+          <textarea required value={tagsString} onChange={onTagsChange} />
         </div>
         <div className="emotion-source-container">
           <div>
@@ -117,6 +131,7 @@ function UploadScreen() {
           <div>
             <label>Source</label>
             <input
+              required
               className="source"
               value={source}
               type="text"
@@ -126,16 +141,16 @@ function UploadScreen() {
           </div>
         </div>
       </fieldset>
-      <fieldset disabled={isLoading} className="project-mvc-Thumbnail-Fieldset">
-        <legend>Thumbnail</legend>
-        <input type="file" onChange={onThumbnailUpload} />
-        {thumbnailFile && (
-          <img src={URL.createObjectURL(thumbnailFile)} height={500} />
-        )}
-      </fieldset>
+
       <div className="project-mvc-UploadButton-Container">
         <button onClick={onUpload} disabled={isLoading}>
-          Upload
+          {isLoading ? (
+            <AiOutlineLoading3Quarters
+              className={isLoading ? "isLoading" : ""}
+            />
+          ) : (
+            "Upload"
+          )}
         </button>
       </div>
     </div>
