@@ -4,6 +4,7 @@ import "./styled.css";
 import { Player } from "video-react";
 import { AiOutlineSearch } from "react-icons/ai";
 import Loading from "../../Loading";
+import Video from "../../Video";
 
 export interface Video {
   numberOfReports: number;
@@ -22,11 +23,14 @@ function Dashboard() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEmptySearchResults, setIsEmptySearchResults] = useState(false);
   let searchTimeout: any;
   // Callbacks.
   const fetchAllVideos = useCallback(async () => {
+    setIsLoading(true);
     const temp: Video[] = await GetAllVideos();
+    setIsLoading(false);
 
     if (temp.length) {
       setVideos(temp);
@@ -79,21 +83,14 @@ function Dashboard() {
         />
       </div>
 
-      {!isSearching ? (
+      {!isSearching && !isLoading ? (
         !isEmptySearchResults ? (
           <div className="project-mvc-Videos-Container">
-            {videos.map((video) => (
-              <div className="project-mvc-Video">
-                <Player
-                  playsInline
-                  src={video.videoDownloadURL}
-                  fluid={false}
-                  height={200}
-                  width={350}
-                />
-                <p>{video.title}</p>
-              </div>
-            ))}
+            {videos.length ? (
+              videos.map((video) => <Video video={video} />)
+            ) : (
+              <p>No videos found...</p>
+            )}
           </div>
         ) : (
           <p>No search results found...</p>

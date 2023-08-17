@@ -1,0 +1,18 @@
+.project-mvc-DeleteModal-Controls {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: var(--mvc-spacing-half);
+}
+
+.project-mvc-DeleteModal-Controls > * {
+  padding: var(--mvc-spacing-half) var(--mvc-spacing-one);
+  font-size: medium;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.project-mvc-DeleteModal-Controls > .delete {
+  background-color: red;
+  color: white;
+}

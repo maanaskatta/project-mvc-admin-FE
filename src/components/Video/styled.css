@@ -1,0 +1,17 @@
+.project-mvc-Video {
+  background-color: white;
+  border-radius: var(--mvc-spacing-one);
+  padding: var(--mvc-spacing-half) var(--mvc-spacing-one);
+}
+
+.project-mvc-Video-Controls {
+  margin-top: var(--mvc-spacing-one);
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: var(--mvc-spacing-one);
+}
+
+.project-mvc-Video-Controls > * {
+  cursor: pointer;
+}

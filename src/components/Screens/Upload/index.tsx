@@ -1,6 +1,6 @@
 // Libraries.
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Player } from "video-react";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
@@ -11,6 +11,8 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import "./styled.css";
 import {
+  EditVideo,
+  GetEmotions,
   UploadFileToFirebase,
   UploadVideo,
 } from "../../../utilities/BackendAPI";
@@ -19,18 +21,26 @@ import { commaSeparatedStringToArray } from "../../../utilities/helpers";
 // Public.
 
 // Renders the Upload Screen.
-function UploadScreen() {
+function UploadScreen({ isEditing = false, videoData = null }: any) {
   // State.
-  const [videoFile, setVideoFile] = useState<any>(null);
-  const [tagsString, setTagsString] = useState("");
-  const [emotions, setEmotions] = useState(["Happy", "Anger", "Sad"]);
-  const [selectedEmotion, setSelectedEmotion] = useState("");
-  const [source, setSource] = useState("");
+  const [videoFile, setVideoFile] = useState<any>(
+    videoData ? videoData.videoDownloadURL : null
+  );
+  const [tagsString, setTagsString] = useState(
+    videoData ? videoData.tags.join(",") : ""
+  );
+  const [emotions, setEmotions] = useState<string[]>([]);
+  const [selectedEmotion, setSelectedEmotion] = useState(
+    videoData ? videoData.emotion : ""
+  );
+  const [source, setSource] = useState(videoData ? videoData.source : "");
   const [isLoading, setIsLoading] = useState(false);
+  const [isFormEditted, setIsFormEditted] = useState(false);
 
   // Callbacks.
   const onVideoFileUpload = useCallback(
     (e: any) => {
+      setIsFormEditted(true);
       setVideoFile(e.target.files[0]);
     },
     [videoFile]
@@ -41,6 +51,7 @@ function UploadScreen() {
     setTagsString("");
     setSelectedEmotion("");
     setSource("");
+    setIsFormEditted(false);
   };
 
   const onTagsChange = useCallback(
@@ -72,41 +83,78 @@ function UploadScreen() {
       source.length > 0
     ) {
       setIsLoading(true);
-      const videoDownloadURL = await UploadFileToFirebase(videoFile);
+      let videoDownloadURL: string | undefined = "";
+      if (isFormEditted) {
+        videoDownloadURL = await UploadFileToFirebase(videoFile);
+      }
       const tags = commaSeparatedStringToArray(tagsString);
       const videoDataObject = {
+        ...(isEditing && videoData && { id: videoData.id }),
         emotion: selectedEmotion,
-        numberOfDownloads: 0,
-        numberOfReports: 0,
+        numberOfDownloads: videoData ? videoData.numberOfDownloads : 0,
+        numberOfReports: videoData ? videoData.numberOfReports : 0,
         source,
         tags,
         title: videoFile?.name,
-        videoDownloadURL,
+        videoDownloadURL:
+          videoData && !isFormEditted
+            ? videoData.videoDownloadURL
+            : videoDownloadURL,
       };
-      const isVideoUploaded: boolean = await UploadVideo(videoDataObject);
+
+      const isVideoUploaded: boolean = isEditing
+        ? await EditVideo(videoDataObject)
+        : await UploadVideo(videoDataObject);
       if (isVideoUploaded) {
-        toast.success("Video uploaded successfully!");
+        toast.success(
+          `Video ${isEditing ? "updated" : "uploaded"} successfully!`
+        );
       } else {
-        toast.error("Failed to upload video!...");
+        toast.error(`Failed to ${isEditing ? "update" : "upload"} video!...`);
       }
       setIsLoading(false);
       clearForm();
+      if (isEditing) {
+        window.location.reload();
+      }
     } else {
       toast.warning("Please fill all the required fields!...");
     }
   };
 
+  const fetchEmotions = async () => {
+    const localEmotions = localStorage.getItem("emotions");
+    if (localEmotions) {
+      setEmotions(JSON.parse(localEmotions));
+    } else {
+      const res = await GetEmotions();
+      setEmotions(res);
+      localStorage.setItem("emotions", JSON.stringify(res));
+    }
+  };
+
+  // Setup and Teardown.
+  useEffect(() => {
+    fetchEmotions();
+  }, []);
+
   // Markup.
   return (
-    <div className="project-MVC-UploadVideo-Container">
-      <h3>Upload Video</h3>
+    <div
+      className="project-MVC-UploadVideo-Container"
+      style={{ padding: isEditing ? "1rem 2rem" : "1rem 10rem" }}>
+      <h3>{isEditing ? "Update" : "Upload"} Video</h3>
       <fieldset disabled={isLoading} className="project-mvc-Video-Fieldset">
         <legend>Video</legend>
         <input required type="file" onChange={onVideoFileUpload} />
         {videoFile && (
           <Player
             playsInline
-            src={URL.createObjectURL(videoFile)}
+            src={
+              videoData && !isFormEditted
+                ? videoFile
+                : URL.createObjectURL(videoFile)
+            }
             fluid={false}
             height={500}
             width={800}
@@ -120,14 +168,19 @@ function UploadScreen() {
           <textarea required value={tagsString} onChange={onTagsChange} />
         </div>
         <div className="emotion-source-container">
-          <div>
-            <label>Emotion</label>
-            <Dropdown
-              disabled={isLoading}
-              options={emotions}
-              onChange={onEmotionsSelect}
-            />
-          </div>
+          {emotions.length > 0 ? (
+            <div>
+              <label>Emotion</label>
+              <Dropdown
+                value={selectedEmotion}
+                disabled={isLoading}
+                options={emotions}
+                onChange={onEmotionsSelect}
+              />
+            </div>
+          ) : (
+            <p>Waiting for emotions...</p>
+          )}
           <div>
             <label>Source</label>
             <input
@@ -148,6 +201,8 @@ function UploadScreen() {
             <AiOutlineLoading3Quarters
               className={isLoading ? "isLoading" : ""}
             />
+          ) : isEditing ? (
+            "Update"
           ) : (
             "Upload"
           )}
