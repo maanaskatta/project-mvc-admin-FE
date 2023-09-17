@@ -1,6 +1,6 @@
 // Dependencies.
 import { Player } from "video-react";
-import { BsPencilFill, BsTrashFill } from "react-icons/bs";
+import { BsPencilFill, BsTrashFill, BsDownload } from "react-icons/bs";
 import "./styled.css";
 import { useCallback, useState } from "react";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
@@ -55,6 +55,10 @@ function Video({ video }: any) {
         width={350}
       />
       <div className="project-mvc-Video-Controls">
+        <a download={video.title} href={video.videoDownloadURL} target="_blank">
+          <BsDownload color="green" size={16} />
+        </a>
+
         <BsPencilFill
           color="darkorange"
           onClick={openEditVideoModal}

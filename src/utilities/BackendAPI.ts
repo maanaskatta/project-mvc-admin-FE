@@ -5,7 +5,7 @@ import { Video } from "../components/Screens/Dashboard";
 
 const HOST = "https://project-mvc-memifi-3462093bfecd.herokuapp.com";
 const EMOTIONSGITHUBGIST =
-  "https://gist.githubusercontent.com/maanaskatta/ddfe24cb5102445e8639a9b453ce6d03/raw/5ce0f9f6f53ea7ad7667c754f645bfa6277ac03c/gistfile1.txt";
+  "https://gist.githubusercontent.com/projectMVC/04235e757eefab86a123992f262429af/raw/e1c36ccda9a51e497c8350b4cc78a5cbc65b3d02/gistfile1.txt";
 
 export const UploadFileToFirebase = async (file: any) => {
   const storageRef = Storage.ref();

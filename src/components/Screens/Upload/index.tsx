@@ -62,8 +62,8 @@ function UploadScreen({ isEditing = false, videoData = null }: any) {
   );
 
   const onEmotionsSelect = useCallback(
-    (option: any) => {
-      setSelectedEmotion(option.value);
+    (e: any) => {
+      setSelectedEmotion(e.target.value);
     },
     [selectedEmotion]
   );
@@ -74,6 +74,13 @@ function UploadScreen({ isEditing = false, videoData = null }: any) {
     },
     [source]
   );
+
+  function trimAndCombineToOneWord(inputString: String): String {
+    // Remove all spaces from the input string using regex
+    const trimmedString = inputString.replace(/\s+/g, "");
+
+    return trimmedString;
+  }
 
   const onUpload = async () => {
     if (
@@ -90,7 +97,7 @@ function UploadScreen({ isEditing = false, videoData = null }: any) {
       const tags = commaSeparatedStringToArray(tagsString);
       const videoDataObject = {
         ...(isEditing && videoData && { id: videoData.id }),
-        emotion: selectedEmotion,
+        emotion: trimAndCombineToOneWord(selectedEmotion),
         numberOfDownloads: videoData ? videoData.numberOfDownloads : 0,
         numberOfReports: videoData ? videoData.numberOfReports : 0,
         source,
@@ -122,22 +129,6 @@ function UploadScreen({ isEditing = false, videoData = null }: any) {
     }
   };
 
-  const fetchEmotions = async () => {
-    const localEmotions = localStorage.getItem("emotions");
-    if (localEmotions) {
-      setEmotions(JSON.parse(localEmotions));
-    } else {
-      const res = await GetEmotions();
-      setEmotions(res);
-      localStorage.setItem("emotions", JSON.stringify(res));
-    }
-  };
-
-  // Setup and Teardown.
-  useEffect(() => {
-    fetchEmotions();
-  }, []);
-
   // Markup.
   return (
     <div
@@ -168,19 +159,17 @@ function UploadScreen({ isEditing = false, videoData = null }: any) {
           <textarea required value={tagsString} onChange={onTagsChange} />
         </div>
         <div className="emotion-source-container">
-          {emotions.length > 0 ? (
-            <div>
-              <label>Emotion</label>
-              <Dropdown
-                value={selectedEmotion}
-                disabled={isLoading}
-                options={emotions}
-                onChange={onEmotionsSelect}
-              />
-            </div>
-          ) : (
-            <p>Waiting for emotions...</p>
-          )}
+          <div>
+            <label>Emotion</label>
+            <input
+              required
+              className="source"
+              value={selectedEmotion}
+              type="text"
+              onChange={onEmotionsSelect}
+              placeholder="Enter the emotion..."
+            />
+          </div>
           <div>
             <label>Source</label>
             <input

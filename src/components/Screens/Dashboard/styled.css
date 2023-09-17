@@ -4,6 +4,7 @@
 
 .project-mvc-Videos-Container {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
   gap: var(--mvc-spacing-one);
   margin-left: var(--mvc-spacing-one);
